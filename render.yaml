@@ -19,7 +19,7 @@ services:
   - type: web
     name: bakewise-frontend
     env: static
-    plan: free
+    plan: starter
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist

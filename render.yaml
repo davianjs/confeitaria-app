@@ -16,12 +16,13 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
-staticSites:
-  - name: bakewise-frontend
+  - type: web
+    name: bakewise-frontend
+    env: static
     plan: free
     rootDir: frontend
     buildCommand: npm install && npm run build
-    publishPath: dist
+    staticPublishPath: dist
     autoDeploy: true
     envVars:
       - key: VITE_API_URL

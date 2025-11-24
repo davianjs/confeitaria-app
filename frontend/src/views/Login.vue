@@ -55,8 +55,8 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { Button, Input, Label, Card, ErrorText } from '../components/StyledComponents.js';
-import * as authService from '../services/authService.js';
+import { Button, Input, Label, Card, ErrorText } from '../components/StyledComponents';
+import * as authService from '../services/authService';
 
 const router = useRouter();
 const isLogin = ref(true);

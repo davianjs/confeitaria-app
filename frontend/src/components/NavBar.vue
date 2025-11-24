@@ -127,7 +127,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { Button } from './StyledComponents.js';
+import { Button } from './StyledComponents';
 
 defineProps({
   nomeEstabelecimento: {

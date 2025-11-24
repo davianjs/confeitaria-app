@@ -1,13 +1,34 @@
-import Produto from '../models/Produto.js';
-import Insumo from '../models/Insumo.js';
+import Produto, { IProduto, IIngrediente } from '../models/Produto.js';
+import Insumo, { IInsumo } from '../models/Insumo.js';
 
-export const listarProdutos = async (userId) => {
+interface ProdutoData {
+  nome: string;
+  descricao?: string;
+  precoVenda: number;
+  ingredientes: IIngrediente[];
+}
+
+interface CustoProduto {
+  custoTotal: number;
+  precoVenda: number;
+  lucro: number;
+}
+
+interface IngredientePopulado extends Omit<IIngrediente, 'insumo'> {
+  insumo: IInsumo;
+}
+
+interface ProdutoPopulado extends Omit<IProduto, 'ingredientes'> {
+  ingredientes: IngredientePopulado[];
+}
+
+export const listarProdutos = async (userId: string): Promise<IProduto[]> => {
   return Produto.find({ userId })
     .populate('ingredientes.insumo')
     .sort({ nome: 1 });
 };
 
-export const buscarProdutoPorId = async (produtoId, userId) => {
+export const buscarProdutoPorId = async (produtoId: string, userId: string): Promise<IProduto> => {
   const produto = await Produto.findOne({ _id: produtoId, userId })
     .populate('ingredientes.insumo');
   
@@ -18,14 +39,14 @@ export const buscarProdutoPorId = async (produtoId, userId) => {
   return produto;
 };
 
-const calcularCustoProduto = (ingredientes) => {
+const calcularCustoProduto = (ingredientes: IngredientePopulado[]): number => {
   return ingredientes.reduce((total, ing) => {
     const custoIngrediente = ing.insumo.custoUnitario * ing.quantidade;
     return total + custoIngrediente;
   }, 0);
 };
 
-export const criarProduto = async (dadosProduto, userId) => {
+export const criarProduto = async (dadosProduto: ProdutoData, userId: string): Promise<IProduto> => {
   const insumosIds = dadosProduto.ingredientes.map(ing => ing.insumo);
   const insumosExistem = await Insumo.find({
     _id: { $in: insumosIds },
@@ -42,7 +63,11 @@ export const criarProduto = async (dadosProduto, userId) => {
   });
 };
 
-export const atualizarProduto = async (produtoId, dadosProduto, userId) => {
+export const atualizarProduto = async (
+  produtoId: string,
+  dadosProduto: Partial<ProdutoData>,
+  userId: string
+): Promise<IProduto> => {
   if (dadosProduto.ingredientes) {
     const insumosIds = dadosProduto.ingredientes.map(ing => ing.insumo);
     const insumosExistem = await Insumo.find({
@@ -68,7 +93,7 @@ export const atualizarProduto = async (produtoId, dadosProduto, userId) => {
   return produto;
 };
 
-export const deletarProduto = async (produtoId, userId) => {
+export const deletarProduto = async (produtoId: string, userId: string): Promise<IProduto> => {
   const produto = await Produto.findOneAndDelete({ _id: produtoId, userId });
 
   if (!produto) {
@@ -78,8 +103,11 @@ export const deletarProduto = async (produtoId, userId) => {
   return produto;
 };
 
-export const calcularCustoProdutoById = async (produtoId, userId) => {
-  const produto = await buscarProdutoPorId(produtoId, userId);
+export const calcularCustoProdutoById = async (
+  produtoId: string,
+  userId: string
+): Promise<CustoProduto> => {
+  const produto = await buscarProdutoPorId(produtoId, userId) as unknown as ProdutoPopulado;
   const custoTotal = calcularCustoProduto(produto.ingredientes);
   
   return {

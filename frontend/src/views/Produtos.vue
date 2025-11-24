@@ -208,12 +208,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { Button, Card, Table, Th, Td, Badge, Modal, ModalContent, Input, Select, Label, ErrorText } from '../components/StyledComponents.js';
+import { Button, Card, Table, Th, Td, Badge, Modal, ModalContent, Input, Select, Label, ErrorText } from '../components/StyledComponents';
 import NavBar from '../components/NavBar.vue';
 import ConfirmDialog from '../components/ConfirmDialog.vue';
-import * as produtoService from '../services/produtoService.js';
-import * as insumoService from '../services/insumoService.js';
-import * as authService from '../services/authService.js';
+import * as produtoService from '../services/produtoService';
+import * as insumoService from '../services/insumoService';
+import * as authService from '../services/authService';
 
 const router = useRouter();
 const loading = ref(true);

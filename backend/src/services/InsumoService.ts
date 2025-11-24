@@ -1,11 +1,18 @@
-import Insumo from '../models/Insumo.js';
+import Insumo, { IInsumo } from '../models/Insumo.js';
 import Produto from '../models/Produto.js';
 
-export const listarInsumos = async (userId) => {
+interface InsumoData {
+  nome: string;
+  unidadeMedida: string;
+  quantidadeEstoque: number;
+  custoUnitario: number;
+}
+
+export const listarInsumos = async (userId: string): Promise<IInsumo[]> => {
   return Insumo.find({ userId }).sort({ nome: 1 });
 };
 
-export const buscarInsumoPorId = async (insumoId, userId) => {
+export const buscarInsumoPorId = async (insumoId: string, userId: string): Promise<IInsumo> => {
   const insumo = await Insumo.findOne({ _id: insumoId, userId });
   
   if (!insumo) {
@@ -15,14 +22,18 @@ export const buscarInsumoPorId = async (insumoId, userId) => {
   return insumo;
 };
 
-export const criarInsumo = async (dadosInsumo, userId) => {
+export const criarInsumo = async (dadosInsumo: InsumoData, userId: string): Promise<IInsumo> => {
   return Insumo.create({
     ...dadosInsumo,
     userId
   });
 };
 
-export const atualizarInsumo = async (insumoId, dadosInsumo, userId) => {
+export const atualizarInsumo = async (
+  insumoId: string,
+  dadosInsumo: Partial<InsumoData>,
+  userId: string
+): Promise<IInsumo> => {
   const insumo = await Insumo.findOneAndUpdate(
     { _id: insumoId, userId },
     dadosInsumo,
@@ -36,7 +47,7 @@ export const atualizarInsumo = async (insumoId, dadosInsumo, userId) => {
   return insumo;
 };
 
-export const deletarInsumo = async (insumoId, userId) => {
+export const deletarInsumo = async (insumoId: string, userId: string): Promise<IInsumo> => {
   const produtosUsandoInsumo = await Produto.find({
     userId,
     'ingredientes.insumo': insumoId

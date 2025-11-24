@@ -210,11 +210,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { Button, Card, Table, Th, Td, Modal, ModalContent, Input, Select, Label, ErrorText } from '../components/StyledComponents.js';
+import { Button, Card, Table, Th, Td, Modal, ModalContent, Input, Select, Label, ErrorText } from '../components/StyledComponents';
 import NavBar from '../components/NavBar.vue';
-import * as vendaService from '../services/vendaService.js';
-import * as produtoService from '../services/produtoService.js';
-import * as authService from '../services/authService.js';
+import * as vendaService from '../services/vendaService';
+import * as produtoService from '../services/produtoService';
+import * as authService from '../services/authService';
 
 const router = useRouter();
 const loading = ref(true);

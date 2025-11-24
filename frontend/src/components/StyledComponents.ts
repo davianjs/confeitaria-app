@@ -7,20 +7,20 @@ const buttonProps = {
 };
 
 export const Button = styled('button', buttonProps)`
-  padding: ${props => props.size === 'sm' ? '0.4rem 0.75rem' : props.size === 'lg' ? '0.75rem 1.25rem' : '0.5rem 1rem'};
-  font-size: ${props => props.size === 'sm' ? '0.8125rem' : props.size === 'lg' ? '1rem' : '0.875rem'};
+  padding: ${(props: any) => props.size === 'sm' ? '0.4rem 0.75rem' : props.size === 'lg' ? '0.75rem 1.25rem' : '0.5rem 1rem'};
+  font-size: ${(props: any) => props.size === 'sm' ? '0.8125rem' : props.size === 'lg' ? '1rem' : '0.875rem'};
   font-weight: 600;
   border-radius: 0.5rem;
   border: none;
   cursor: pointer;
   transition: all 0.2s;
-  width: ${props => props.fullWidth ? '100%' : 'auto'};
+  width: ${(props: any) => props.fullWidth ? '100%' : 'auto'};
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.375rem;
 
-  background-color: ${props => {
+  background-color: ${(props: any) => {
     if (props.variant === 'secondary') return '#6b7280';
     if (props.variant === 'danger') return '#dc2626';
     if (props.variant === 'success') return '#059669';
@@ -45,7 +45,7 @@ export const Button = styled('button', buttonProps)`
   }
 
   .material-symbols-outlined {
-    font-size: ${props => props.size === 'sm' ? '1.125rem' : '1.25rem'};
+    font-size: ${(props: any) => props.size === 'sm' ? '1.125rem' : '1.25rem'};
   }
 `;
 
@@ -57,14 +57,14 @@ export const Input = styled('input', inputProps)`
   width: 100%;
   padding: 0.625rem 0.875rem;
   font-size: 1rem;
-  border: 2px solid ${props => props.hasError ? '#dc2626' : '#e5e7eb'};
+  border: 2px solid ${(props: any) => props.hasError ? '#dc2626' : '#e5e7eb'};
   border-radius: 0.5rem;
   outline: none;
   transition: all 0.2s;
 
   &:focus {
-    border-color: ${props => props.hasError ? '#dc2626' : '#ef4444'};
-    box-shadow: 0 0 0 3px ${props => props.hasError ? 'rgba(220, 38, 38, 0.1)' : 'rgba(239, 68, 68, 0.1)'};
+    border-color: ${(props: any) => props.hasError ? '#dc2626' : '#ef4444'};
+    box-shadow: 0 0 0 3px ${(props: any) => props.hasError ? 'rgba(220, 38, 38, 0.1)' : 'rgba(239, 68, 68, 0.1)'};
   }
 
   &::placeholder {
@@ -81,7 +81,7 @@ export const Select = styled('select', inputProps)`
   width: 100%;
   padding: 0.625rem 0.875rem;
   font-size: 1rem;
-  border: 2px solid ${props => props.hasError ? '#dc2626' : '#e5e7eb'};
+  border: 2px solid ${(props: any) => props.hasError ? '#dc2626' : '#e5e7eb'};
   border-radius: 0.5rem;
   outline: none;
   transition: all 0.2s;
@@ -89,8 +89,8 @@ export const Select = styled('select', inputProps)`
   cursor: pointer;
 
   &:focus {
-    border-color: ${props => props.hasError ? '#dc2626' : '#ef4444'};
-    box-shadow: 0 0 0 3px ${props => props.hasError ? 'rgba(220, 38, 38, 0.1)' : 'rgba(239, 68, 68, 0.1)'};
+    border-color: ${(props: any) => props.hasError ? '#dc2626' : '#ef4444'};
+    box-shadow: 0 0 0 3px ${(props: any) => props.hasError ? 'rgba(220, 38, 38, 0.1)' : 'rgba(239, 68, 68, 0.1)'};
   }
 
   &:disabled {
@@ -136,13 +136,13 @@ export const Badge = styled('span', badgeProps)`
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: 9999px;
-  background-color: ${props => {
+  background-color: ${(props: any) => {
     if (props.variant === 'success') return '#d1fae5';
     if (props.variant === 'warning') return '#fef3c7';
     if (props.variant === 'danger') return '#fee2e2';
     return '#e5e7eb';
   }};
-  color: ${props => {
+  color: ${(props: any) => {
     if (props.variant === 'success') return '#065f46';
     if (props.variant === 'warning') return '#92400e';
     if (props.variant === 'danger') return '#991b1b';

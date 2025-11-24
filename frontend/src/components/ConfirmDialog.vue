@@ -38,7 +38,7 @@
 
 <script setup>
 import { computed } from 'vue';
-import { Modal, ModalContent, Button } from './StyledComponents.js';
+import { Modal, ModalContent, Button } from './StyledComponents';
 
 const props = defineProps({
   isOpen: {

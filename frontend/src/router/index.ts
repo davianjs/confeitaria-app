@@ -1,5 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import { isAuthenticated } from '../services/authService.js';
+import { createRouter, createWebHistory, RouteRecordRaw, NavigationGuardNext, RouteLocationNormalized } from 'vue-router';
+import { isAuthenticated } from '../services/authService';
 
 import Login from '../views/Login.vue';
 import Dashboard from '../views/Dashboard.vue';
@@ -7,7 +7,7 @@ import Insumos from '../views/Insumos.vue';
 import Produtos from '../views/Produtos.vue';
 import Vendas from '../views/Vendas.vue';
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     redirect: '/dashboard'
@@ -49,7 +49,7 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
   const autenticado = isAuthenticated();
 
   if (to.meta.requiresAuth && !autenticado) {

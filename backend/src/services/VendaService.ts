@@ -1,9 +1,31 @@
-import Venda from '../models/Venda.js';
-import Produto from '../models/Produto.js';
-import Insumo from '../models/Insumo.js';
-import mongoose from 'mongoose';
+import Venda, { IVenda, IProdutoSnapshot, IIngredienteSnapshot } from '../models/Venda.js';
+import Produto, { IProduto } from '../models/Produto.js';
+import Insumo, { IInsumo } from '../models/Insumo.js';
+import mongoose, { ClientSession } from 'mongoose';
 
-const verificarEstoqueDisponivel = async (ingredientes, quantidade, userId) => {
+interface IngredientePopulado {
+  insumo: IInsumo;
+  quantidade: number;
+}
+
+interface VerificacaoEstoque {
+  disponivel: boolean;
+  insumoId?: mongoose.Types.ObjectId;
+  nomeInsumo: string;
+  necessario: number;
+  estoque: number;
+}
+
+interface FiltrosVenda {
+  dataInicio?: string;
+  dataFim?: string;
+}
+
+const verificarEstoqueDisponivel = async (
+  ingredientes: IngredientePopulado[],
+  quantidade: number,
+  userId: string
+): Promise<VerificacaoEstoque[]> => {
   const verificacoes = await Promise.all(
     ingredientes.map(async (ing) => {
       const insumo = await Insumo.findOne({ _id: ing.insumo._id, userId });
@@ -13,7 +35,7 @@ const verificarEstoqueDisponivel = async (ingredientes, quantidade, userId) => {
           disponivel: false,
           nomeInsumo: ing.insumo.nome,
           necessario: ing.quantidade * quantidade,
-          disponivel: 0
+          estoque: 0
         };
       }
 
@@ -41,7 +63,11 @@ const verificarEstoqueDisponivel = async (ingredientes, quantidade, userId) => {
   return verificacoes;
 };
 
-const decrementarEstoque = async (ingredientes, quantidade, session) => {
+const decrementarEstoque = async (
+  ingredientes: VerificacaoEstoque[],
+  quantidade: number,
+  session: ClientSession
+): Promise<void> => {
   const operacoes = ingredientes.map((ing) => ({
     updateOne: {
       filter: { _id: ing.insumoId },
@@ -52,8 +78,11 @@ const decrementarEstoque = async (ingredientes, quantidade, session) => {
   await Insumo.bulkWrite(operacoes, { session });
 };
 
-const criarSnapshot = (produto, ingredientesPopulados) => {
-  const ingredientesSnapshot = ingredientesPopulados.map(ing => ({
+const criarSnapshot = (
+  produto: IProduto,
+  ingredientesPopulados: IngredientePopulado[]
+): IProdutoSnapshot => {
+  const ingredientesSnapshot: IIngredienteSnapshot[] = ingredientesPopulados.map(ing => ({
     nomeInsumo: ing.insumo.nome,
     quantidade: ing.quantidade,
     custoUnitario: ing.insumo.custoUnitario
@@ -72,7 +101,11 @@ const criarSnapshot = (produto, ingredientesPopulados) => {
   };
 };
 
-export const registrarVenda = async (produtoId, quantidade, userId) => {
+export const registrarVenda = async (
+  produtoId: string,
+  quantidade: number,
+  userId: string
+): Promise<IVenda> => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -85,17 +118,17 @@ export const registrarVenda = async (produtoId, quantidade, userId) => {
       throw new Error('Produto não encontrado');
     }
 
-    await verificarEstoqueDisponivel(produto.ingredientes, quantidade, userId);
+    const ingredientesPopulados = produto.ingredientes as unknown as IngredientePopulado[];
 
     const verificacoes = await verificarEstoqueDisponivel(
-      produto.ingredientes,
+      ingredientesPopulados,
       quantidade,
       userId
     );
 
     await decrementarEstoque(verificacoes, quantidade, session);
 
-    const snapshot = criarSnapshot(produto, produto.ingredientes);
+    const snapshot = criarSnapshot(produto, ingredientesPopulados);
     const valorTotal = snapshot.precoVenda * quantidade;
     const custoTotalVenda = snapshot.custoTotal * quantidade;
     const lucro = valorTotal - custoTotalVenda;
@@ -119,8 +152,8 @@ export const registrarVenda = async (produtoId, quantidade, userId) => {
   }
 };
 
-export const listarVendas = async (userId, filtros = {}) => {
-  const query = { userId };
+export const listarVendas = async (userId: string, filtros: FiltrosVenda = {}): Promise<IVenda[]> => {
+  const query: any = { userId };
 
   if (filtros.dataInicio || filtros.dataFim) {
     query.createdAt = {};
@@ -135,7 +168,7 @@ export const listarVendas = async (userId, filtros = {}) => {
   return Venda.find(query).sort({ createdAt: -1 });
 };
 
-export const buscarVendaPorId = async (vendaId, userId) => {
+export const buscarVendaPorId = async (vendaId: string, userId: string): Promise<IVenda> => {
   const venda = await Venda.findOne({ _id: vendaId, userId });
   
   if (!venda) {

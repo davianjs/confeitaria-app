@@ -1,8 +1,48 @@
-import Venda from '../models/Venda.js';
+import Venda, { IVenda } from '../models/Venda.js';
 import Produto from '../models/Produto.js';
-import Insumo from '../models/Insumo.js';
+import Insumo, { IInsumo } from '../models/Insumo.js';
 
-export const obterEstatisticas = async (userId) => {
+interface VendaPorProduto {
+  [key: string]: {
+    nome: string;
+    quantidadeVendida: number;
+    receita: number;
+    lucro: number;
+  };
+}
+
+interface ProdutoMaisVendido {
+  nome: string;
+  quantidadeVendida: number;
+  receita: number;
+  lucro: number;
+}
+
+interface InsumoEstoqueBaixo {
+  nome: string;
+  quantidadeEstoque: number;
+  unidadeMedida: string;
+}
+
+interface Estatisticas {
+  resumo: {
+    totalVendas: number;
+    receitaTotal: number;
+    custoTotal: number;
+    lucroTotal: number;
+    totalProdutos: number;
+    totalInsumos: number;
+  };
+  mesAtual: {
+    vendas: number;
+    receita: number;
+    lucro: number;
+  };
+  produtosMaisVendidos: ProdutoMaisVendido[];
+  insumosComEstoqueBaixo: InsumoEstoqueBaixo[];
+}
+
+export const obterEstatisticas = async (userId: string): Promise<Estatisticas> => {
   const vendas = await Venda.find({ userId });
 
   const totalVendas = vendas.length;
@@ -13,7 +53,7 @@ export const obterEstatisticas = async (userId) => {
   const totalProdutos = await Produto.countDocuments({ userId });
   const totalInsumos = await Insumo.countDocuments({ userId });
 
-  const vendasPorProduto = vendas.reduce((acc, venda) => {
+  const vendasPorProduto: VendaPorProduto = vendas.reduce((acc, venda) => {
     const nomeProduto = venda.produtoSnapshot.nome;
     if (!acc[nomeProduto]) {
       acc[nomeProduto] = {
@@ -27,7 +67,7 @@ export const obterEstatisticas = async (userId) => {
     acc[nomeProduto].receita += venda.valorTotal;
     acc[nomeProduto].lucro += venda.lucro;
     return acc;
-  }, {});
+  }, {} as VendaPorProduto);
 
   const produtosMaisVendidos = Object.values(vendasPorProduto)
     .sort((a, b) => b.quantidadeVendida - a.quantidadeVendida)
@@ -63,6 +103,10 @@ export const obterEstatisticas = async (userId) => {
       lucro: lucroMesAtual
     },
     produtosMaisVendidos,
-    insumosComEstoqueBaixo
+    insumosComEstoqueBaixo: insumosComEstoqueBaixo.map(i => ({
+      nome: i.nome,
+      quantidadeEstoque: i.quantidadeEstoque,
+      unidadeMedida: i.unidadeMedida
+    }))
   };
 };

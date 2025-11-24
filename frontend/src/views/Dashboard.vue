@@ -116,10 +116,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { Card, Badge } from '../components/StyledComponents.js';
+import { Card, Badge } from '../components/StyledComponents';
 import NavBar from '../components/NavBar.vue';
-import * as dashboardService from '../services/dashboardService.js';
-import * as authService from '../services/authService.js';
+import * as dashboardService from '../services/dashboardService';
+import * as authService from '../services/authService';
 
 const router = useRouter();
 const loading = ref(true);
